@@ -14,7 +14,7 @@ const MAP = {
     appLazy: {
         map: 'appLazy.js.map',
         test: 'testappLazy.txt',
-        output: 'appLazy.d612b12169d1f9664910bfd8ee0226ba5862165e.js:1:193237 -> webpack:///src/templates/elements/labelsElement.tpl.html:8:70'
+        output: 'appLazy.d612b12169d1f9664910bfd8ee0226ba5862165e.js:1:600624 -> webpack:///src/app/message/factories/messageModel.js:195:20'
     }
 };
 
@@ -37,7 +37,7 @@ const formatCommand = ({ map, test }, version = 6) => {
 const test =  async (key, version = 6) => {
     const { output } = MAP[key];
     const { stdout } = await exec(formatCommand(MAP[key], version));
-    if (!stripAnsi(stdout) === output) {
+    if (stripAnsi(stdout) !== output) {
         throw new Error(`Wrong source map parsing for type:${key} and version:${version}`);
     }
     success(`Valid ${key} format - version:${version}`);
