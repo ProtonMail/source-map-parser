@@ -38,7 +38,6 @@ try {
 
       // Returning raw input if there is no match
       const key = (pos.source) ? `${pos.source}:${pos.line}:${pos.column}` : `${row}`;
-
       process.stdout.write(`${row} -> ${key}`);
     }
   });
