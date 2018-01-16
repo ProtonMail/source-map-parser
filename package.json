@@ -1,6 +1,6 @@
 {
   "name": "parse-source-maps",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Convert a minify sourceMaps to unminify one",
   "main": "parseSourceMaps",
   "dependencies": {
