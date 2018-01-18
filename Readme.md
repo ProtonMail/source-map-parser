@@ -18,16 +18,19 @@ $ npm run build
 
 ## Documentation (script)
 
+Binary Node.js >= 6 `./lib/translate.js`
+Binary Node.js < 6 `./lib/translate.es5.js`
+
 Ex:
-### Node.js >= v6
+
 ```shell
 $ ./lib/translate.js tests/app.js.map < testapp.txt
 ```
 
-### Node.js < v6
 ```shell
-$ ./lib/translate.es5.js tests/app.js.map < testapp.txt
+$ ./lib/translate.js tests/app.js.map tests/appLazy.js.map < tests.txt
 ```
+
 
 Output:
 

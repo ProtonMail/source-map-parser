@@ -7,21 +7,28 @@ const stripAnsi = require('strip-ansi');
 
 const MAP = {
     app: {
-        map: 'app.js.map',
+        map: ['app.js.map'],
         test: 'testapp.txt',
         output: 'app.2ee28f9d8be7bdc316ddb862acaff899402acec0.js:1:937016 -> webpack:///src/app/user/services/manageUser.js:88:26'
     },
     appLazy: {
-        map: 'appLazy.js.map',
+        map: ['appLazy.js.map'],
         test: 'testappLazy.txt',
         output: 'appLazy.d612b12169d1f9664910bfd8ee0226ba5862165e.js:1:600624 -> webpack:///src/app/message/factories/messageModel.js:195:20'
-    }
+    },
+    multilines: {
+        map: [ 'app.js.map', 'appLazy.js.map' ],
+        test: 'tests.txt',
+        output: 'app.2ee28f9d8be7bdc316ddb862acaff899402acec0.js:1:937016 -> webpack:///src/app/user/services/manageUser.js:88:26appLazy.6f6aafd600d17208358fe2d4859c3dc3e23bab66.js:1:693466 -> webpack:///src/app/blackFriday/factories/blackFridayModel.js:129:70'
+    },
 };
 
 const success = (msg) => console.log(`  ${chalk.green('✓')} ${msg}`);
+const error = (e) => console.log(`  ${chalk.red('×')} ${chalk.red(e.message ? e.message : e)}`);
 
 const formatCommand = ({ map, test }, version = 6) => {
-    const arg = `tests/${map} < tests/${test}`;
+    const sourceMaps = map.map((name) => `tests/${name}`).join(' ');
+    const arg = `${sourceMaps} < tests/${test}`;
     if (version === 6) {
         return `./lib/translate.js ${arg}`;
     }
@@ -38,7 +45,7 @@ const test =  async (key, version = 6) => {
     const { output } = MAP[key];
     const { stdout } = await exec(formatCommand(MAP[key], version));
     if (stripAnsi(stdout) !== output) {
-        throw new Error(`Wrong source map parsing for type:${key} and version:${version}`);
+        return error(`Wrong source map parsing for type:${key} and version:${version}`);
     }
     success(`Valid ${key} format - version:${version}`);
 };
@@ -49,6 +56,7 @@ const test =  async (key, version = 6) => {
         for (version of [5, 6]) {
             await test('appLazy', version);
             await test('app', version);
+            await test('multilines', version);
             console.log('');
         }
 
