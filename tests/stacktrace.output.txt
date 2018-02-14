@@ -1,0 +1,10 @@
+TypeError: Cannot read property 'split' of undefined at Object.getAttachementName 
+appLazy.4b4970e9617d5a5bb0060c746629ae761eab815d.js:1:192980 -> webpack:///src/app/attachments/services/embeddedUtils.js:54:60
+appLazy.4b4970e9617d5a5bb0060c746629ae761eab815d.js:1:189171 -> webpack:///src/app/attachments/services/embeddedFinder.js:34:46
+appLazy.4b4970e9617d5a5bb0060c746629ae761eab815d.js:1:189113 -> webpack:///src/app/attachments/services/embeddedFinder.js:31:36
+appLazy.4b4970e9617d5a5bb0060c746629ae761eab815d.js:1:191333 -> webpack:///src/app/attachments/services/embeddedParser.js:85:36
+appLazy.4b4970e9617d5a5bb0060c746629ae761eab815d.js:1:187860 -> webpack:///src/app/attachments/services/embedded.js:33:13
+appLazy.4b4970e9617d5a5bb0060c746629ae761eab815d.js:1:593577 -> webpack:///src/app/message/services/transformAttachements.js:20:17
+appLazy.4b4970e9617d5a5bb0060c746629ae761eab815d.js:1:592982 -> webpack:///src/app/message/services/prepareContent.js:56:12
+appLazy.4b4970e9617d5a5bb0060c746629ae761eab815d.js:1:546561 -> webpack:///src/app/message/factories/displayContent.js:30:27
+appLazy.4b4970e9617d5a5bb0060c746629ae761eab815d.js:1:546983 -> webpack:///src/app/message/factories/displayContent.js:49:15

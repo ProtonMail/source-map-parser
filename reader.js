@@ -10,7 +10,7 @@ function onError(err) {
 
 try {
   const map = loadSources();
-  extract(map);
+  extract(map, 'stacktrace');
 } catch (e) {
   onError(e);
 }
