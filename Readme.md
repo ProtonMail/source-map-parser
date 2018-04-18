@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/ProtonMail/source-map-parser.svg?style=svg)](https://circleci.com/gh/ProtonMail/source-map-parser)
+
 ## How to install
 
 ```sh
