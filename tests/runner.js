@@ -81,11 +81,15 @@ const testAPI = async () => {
 };
 
 const testAPIError = async () => {
+    const msg = `It should throw an error if invalid input`;
     const loadMap = async () => '';
     try {
         const output = await sourceMaps.format('dew', '(appLazy|app)', loadMap);
-        error(`It should throw an error if invalid input`);
+        error(msg);
     } catch (e) {
+        if (e.message === msg) {
+            throw e;
+        }
         success('Valid api formattor on error');
     }
 };
