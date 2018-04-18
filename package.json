@@ -2,7 +2,7 @@
   "name": "parse-source-maps",
   "version": "1.3.0",
   "description": "Convert a minify sourceMaps to unminify one",
-  "main": "parseSourceMaps",
+  "main": "src/readder.js",
   "dependencies": {
     "byline": "^5.0.0",
     "source-map": "^0.6.1"
@@ -11,14 +11,31 @@
     "babel-cli": "^6.18.0",
     "babel-preset-es2015": "^6.18.0",
     "chalk": "^2.3.0",
-    "strip-ansi": "^4.0.0"
+    "eslint": "^4.19.1",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-plugin-import": "^2.11.0",
+    "eslint-plugin-node": "^6.0.1",
+    "eslint-plugin-promise": "^3.7.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "husky": "^0.14.3",
+    "lint-staged": "^7.0.4",
+    "strip-ansi": "^4.0.0",
+    "prettier": "^1.12.1"
   },
   "scripts": {
     "executable": "chmod +x lib/*.js",
     "build": "babel index.js --out-file lib/translate.es5.js && cp index.js lib/translate.js && npm run executable",
-    "postinstall": "npm run build",
     "postbuild": "npm test",
-    "test": "./tests/runner.js"
+    "test": "./tests/runner.js",
+    "precommit": "lint-staged",
+    "lint": "eslint src/**/*.js --quiet && eslint {index,reader}.js --quiet",
+    "pretty": "prettier --write src/*.js && prettier --write {index,reader}.js"
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --write",
+      "git add"
+    ]
   },
   "author": "dhoko",
   "license": "MIT"

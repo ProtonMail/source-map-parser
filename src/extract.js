@@ -1,4 +1,4 @@
-const byline = require('byline')
+const byline = require('byline');
 const readline = require('readline');
 
 /**
@@ -7,21 +7,29 @@ const readline = require('readline');
  * @param  {Object} sourceMaps Map of parsed source maps
  * @param  {String} row        Current row parsed (stacktrace line)
  */
-const write = (sourceMaps, row) => {
-  const [ name ] = row.split('.');
-  const sourceMapApp = sourceMaps[name];
+const formatItem = (sourceMaps, key) => {
+    const [name] = key.split('.');
+    const sourceMapApp = sourceMaps[name];
 
-  if (!row || !sourceMapApp) {
-    process.stdout.write(row);
-  } else {
+    if (!key || !sourceMapApp) {
+        return { key };
+    }
+
     // Filter and cast line and column as number as the lib don't work with strings
-    const [line, column] = row.split(':').filter(Number).map(Number);
+    const [line, column] = key
+        .split(':')
+        .filter(Number)
+        .map(Number);
     const pos = sourceMapApp.originalPositionFor({ line, column }) || {};
 
     // Returning raw input if there is no match
-    const key = (pos.source) ? `${pos.source}:${pos.line}:${pos.column}` : `${row}`;
-    process.stdout.write(`${row} -> ${key}`.trim());
-  }
+    const value = pos.source ? `${pos.source}:${pos.line}:${pos.column}` : `${key}`;
+    return { key, value };
+};
+
+const write = ({ key = '', value = '' }) => {
+    const output = !value ? key : `${key} -> ${value}`.trim();
+    process.stdout.write(output);
 };
 
 /**
@@ -30,32 +38,72 @@ const write = (sourceMaps, row) => {
  * @param  {Object} sourceMapApp Map of sourcemaps parsed
  * @param  {String} type         Type of parsing default is line by line from stdin
  */
-const processor = (sourceMapApp, type = 'line') => {
-  const stream = byline.createStream(process.stdin);
-  stream.on('data', function(line) {
-    readline.clearLine(process.stdout, 0)
-    readline.cursorTo(process.stdout, 0);
+const convertLog = (sourceMapApp, type = 'line') => {
+    const stream = byline.createStream(process.stdin);
+    stream.on('data', function(line) {
+        readline.clearLine(process.stdout, 0);
+        readline.cursorTo(process.stdout, 0);
 
-    if (type === 'line') {
-      write(sourceMapApp, line.toString());
-    }
+        if (type === 'line') {
+            write(formatItem(sourceMapApp, line.toString()));
+        }
 
-    if (type === 'stacktrace') {
-      const str = line.toString();
-      // Extract the error message
-      const [ message ] = str.match(/(?:(?!\(http).)*/i) || [];
-      process.stdout.write(message);
-      process.stdout.write('\n');
+        if (type === 'stacktrace') {
+            const str = line.toString();
+            // Extract the error message
+            const [message] = str.match(/(?:(?!\(http).)*/i) || [];
 
-      // The stacktrace is one line
-      str.match(/((appLazy|app)\.\w+\.js:\d+:\d+)/g)
-        .forEach((row) => {
-          write(sourceMapApp, row);
-          process.stdout.write('\n');
-        });
-    }
+            process.stdout.write(message);
+            process.stdout.write('\n');
 
-  });
+            // The stacktrace is one line
+            str.match(/((appLazy|app)\.\w+\.js:\d+:\d+)/g).forEach((row) => {
+                write(formatItem(sourceMapApp, row));
+                process.stdout.write('\n');
+            });
+        }
+    });
+};
+
+/**
+ * Translate a stracktrace to a dev stacktrace based on the sourceMap
+ * @param  {String} body
+ * @param  {Object} sourceMapApp { name:String: sourceMap:Object }
+ * @return {String}              translated sourcemap
+ */
+function convert(body = '', sourceMapApp) {
+    const lines = body.split('\n');
+    const output = lines
+        .reduce((acc, line) => {
+            const str = line.toString();
+            // Extract the error message
+            const [message = ''] = str.match(/(?:(?!\(http).)*/i) || [];
+
+            // The stacktrace is one line
+            const matches = str.match(/((appLazy|app)\.\w+\.js:\d+:\d+)/g) || [];
+            const list = matches.map((row) => formatItem(sourceMapApp, row));
+
+            // Format the message when we translate the url inside
+            const info = list.reduce(
+                (acc, { key, value }) => {
+                    if (acc.message.includes(key)) {
+                        acc.message = acc.message
+                            .replace(/(https:\/\/.+)app/, 'app')
+                            .replace(key, value)
+                            .replace(/ at /g, '\nat ');
+                        return acc;
+                    }
+
+                    // Push translated value
+                    acc.list.push(value);
+                    return acc;
+                },
+                { message, list: [] }
+            );
+            return acc.concat([info.message].concat(info.list));
+        }, [])
+        .join('\n');
+    return output;
 }
 
-module.exports = processor;
+module.exports = { convertLog, convert };
